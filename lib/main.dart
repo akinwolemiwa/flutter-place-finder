@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:place_finder/pages/homepage.dart';
+import 'package:place_finder/routes/homepage.dart';
 
 void main() {
   runApp(MyApp());
