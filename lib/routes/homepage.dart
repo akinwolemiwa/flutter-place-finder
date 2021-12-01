@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:place_finder/size_config.dart';
+import 'package:rive/rive.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -88,7 +89,7 @@ class _HomePageState extends State<HomePage> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.all(
-                        Radius.circular(20),
+                        Radius.circular(30),
                       ),
                       boxShadow: [
                         BoxShadow(
@@ -117,9 +118,8 @@ class _HomePageState extends State<HomePage> {
                           prefixIcon: Container(
                             height: getPropScreenHeight(56),
                             width: getPropScreenWidth(38),
-                            child: SvgPicture.asset(
-                              maps,
-                              fit: BoxFit.contain,
+                            child: RiveAnimation.asset(
+                              'assets/riv/maps_icon.riv',
                             ),
                           ),
                           suffixIcon: Row(
@@ -130,7 +130,7 @@ class _HomePageState extends State<HomePage> {
                                 padding: const EdgeInsets.only(right: 5),
                                 child: Icon(
                                   FeatherIcons.mic,
-                                  size: getPropScreenWidth(42),
+                                  size: getPropScreenHeight(42),
                                   color: Color(0xff3C4043),
                                 ),
                               ),
