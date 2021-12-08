@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:place_finder/size_config.dart';
+import 'package:place_finder/viewModel/placeListViewModel.dart';
+import 'package:place_finder/viewModel/placeViewModel.dart';
+import 'package:provider/provider.dart';
 import 'package:rive/rive.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,6 +20,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Completer<GoogleMapController> _controller = Completer();
+
+  late Position _newcurrentPosition;
 
   @override
   void initState() {
@@ -32,18 +36,28 @@ class _HomePageState extends State<HomePage> {
   //   print(position);
   // }
 
+  Set<Marker> _getPlaceMarkers(List<PlaceViewModel> places) {
+    return places.map((place) {
+      return Marker(
+          markerId: MarkerId(place.placeId),
+          icon: BitmapDescriptor.defaultMarker,
+          infoWindow: InfoWindow(title: place.name),
+          position: LatLng(place.latitude, place.longitude));
+    }).toSet();
+  }
+
 // gets current position when you start the app
   Future<void> _mapOpened(GoogleMapController controller) async {
     _controller.complete(controller);
-    Position position = await Geolocator.getCurrentPosition(
+    _newcurrentPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     controller.animateCamera(
       CameraUpdate.newCameraPosition(
         CameraPosition(
           zoom: 20,
           target: LatLng(
-            position.latitude,
-            position.longitude,
+            _newcurrentPosition.latitude,
+            _newcurrentPosition.longitude,
           ),
         ),
       ),
@@ -55,7 +69,9 @@ class _HomePageState extends State<HomePage> {
     SizeConfig.init(context);
     // ignore: unnecessary_statements
     SizeConfig.mediaQueryData;
-    String maps = 'assets/svg/maps.svg';
+
+    final vm = Provider.of<PlaceListViewModel>(context);
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       // appBar: AppBar(
@@ -71,6 +87,7 @@ class _HomePageState extends State<HomePage> {
       body: Stack(
         children: [
           GoogleMap(
+            markers: _getPlaceMarkers(vm.places),
             zoomControlsEnabled: false,
             myLocationEnabled: true,
             myLocationButtonEnabled: false,
@@ -106,6 +123,11 @@ class _HomePageState extends State<HomePage> {
                       padding: const EdgeInsets.only(
                           left: 10, right: 10, top: 5, bottom: 5),
                       child: TextFormField(
+                        // value is whatever is typed in the textfield
+                        onFieldSubmitted: (value) {
+                          vm.fetchPlaces(value, _newcurrentPosition.latitude,
+                              _newcurrentPosition.longitude);
+                        },
                         obscureText: false,
                         textAlign: TextAlign.left,
                         keyboardType: TextInputType.text,

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:place_finder/size_config.dart';
+import 'package:place_finder/viewModel/placeListViewModel.dart';
+import 'package:provider/provider.dart';
 import 'package:rive/rive.dart';
 import 'package:place_finder/routes/homepage.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MyApp(),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -36,7 +40,10 @@ class _SplashScreenState extends State<SplashScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => HomePage(),
+            builder: (context) => ChangeNotifierProvider(
+              create: (context) => PlaceListViewModel(),
+              child: HomePage(),
+            ),
           ),
         );
       },
